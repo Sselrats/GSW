@@ -1,0 +1,1 @@
+conda run -n gsw python main.py
