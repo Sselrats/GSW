@@ -4,7 +4,7 @@ import numpy as np
 
 from app.schemas.gsw import (
     GSWInitRequest, GSWEncryptRequest, GSWDecryptRequest, 
-    GSWCiphertextErrorRequest, GSWResponse, GSWModelInfo, GSWCiphertextErrorResponse
+    GSWOperateRequest, GSWCiphertextErrorRequest, GSWResponse
 )
 from app.services.gsw_service import GSWService
 
@@ -28,7 +28,8 @@ async def initialize_gsw(params: GSWInitRequest) -> Dict[str, Any]:
                 "n": result["n"],
                 "q": result["q"],
                 "logq": result["logq"],
-                "l": result["l"]
+                "l": result["l"],
+                "s": result["s"]
             }
         }
     except ValueError as e:
@@ -93,6 +94,41 @@ async def decrypt_ciphertext(request: GSWDecryptRequest) -> Dict[str, Any]:
             "message": result["message"],
             "data": {
                 "plaintext": result["plaintext"]
+            }
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"success": False, "message": str(e)}
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"success": False, "message": f"An error occurred: {str(e)}"}
+        )
+
+@router.post("/operate", response_model=GSWResponse)
+async def operate_ciphertext(request: GSWOperateRequest) -> Dict[str, Any]:
+    """
+    Operate on a ciphertext.
+    
+    - **operation**: Operation to perform (Add or Mult)
+    - **ciphertext**: 2D array of integers to operate on
+    - **inputCiphertext**: 2D array of integers to operate with
+    - **reset**: If True, resets the GSW instance before operating
+    """
+    try:
+        result = gsw_service.operate(
+            operation=request.operation,
+            ciphertext=request.ciphertext,
+            inputCiphertext=request.inputCiphertext,
+            reset=request.reset
+        )
+        return {
+            "success": True,
+            "message": result["message"],
+            "data": {
+                "ciphertext": result["ciphertext"]
             }
         }
     except ValueError as e:

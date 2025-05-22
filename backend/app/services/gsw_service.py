@@ -35,6 +35,7 @@ class GSWService:
                 'q': q,
                 'logq': self._gsw.logq,
                 'l': self._gsw.l,
+                's': self._gsw.s.T.tolist()[0],
                 'message': 'GSW cryptosystem initialized successfully'
             }
         except Exception as e:
@@ -93,6 +94,38 @@ class GSWService:
         except Exception as e:
             raise ValueError(f"Decryption failed: {str(e)}")
     
+    def operate(self, operation: "Add" or "Mult", ciphertext: List[List[int]], inputCiphertext: List[List[int]], reset: bool = False) -> Dict[str, Any]:
+        """Operate on a ciphertext."""
+        if self._gsw is None:
+            raise ValueError("GSW cryptosystem not initialized. Call /init first.")
+        
+        if reset:
+            self.reset()
+        
+        try:
+            # Convert ciphertext to numpy array
+            ctxt = np.array(ciphertext, dtype=np.int32)
+            
+            # Create a GSW_Ciphertext object
+            gsw_ctxt = GSW_Ciphertext(self._gsw, ctxt)
+            
+            # Convert input ciphertext to numpy array
+            input_ctxt = np.array(inputCiphertext, dtype=np.int32)
+            gsw_input_ctxt = GSW_Ciphertext(self._gsw, input_ctxt)
+
+            # Operate on the ciphertext
+            if operation == "Add":
+                operated = gsw_ctxt.Add(gsw_input_ctxt)
+            elif operation == "Mult":
+                operated = gsw_ctxt.Mult(gsw_input_ctxt)
+            
+            return {
+                'ciphertext': operated.C.tolist(),
+                'message': 'Operation successful'
+            }
+        except Exception as e:
+            raise ValueError(f"Operation failed: {str(e)}")
+
     def get_ciphertext_error(self, ciphertext: List[List[int]], reset: bool = False) -> Dict[str, Any]:
         """Get the error of a ciphertext."""
         if self._gsw is None:

@@ -1,8 +1,6 @@
-import React from 'react';
-import { Box, TextField, Button, Typography, Tooltip, IconButton } from '@mui/material';
-import KeyIcon from '@mui/icons-material/Key';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import React from "react";
+import { Box, TextField, Button, Typography, Tooltip } from "@mui/material";
+import KeyIcon from "@mui/icons-material/Key";
 
 interface HeaderProps {
   n: number;
@@ -28,13 +26,13 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
+        display: "flex",
+        flexDirection: { xs: "column", sm: "row" },
         gap: 2,
-        alignItems: 'center',
+        alignItems: "center",
         mb: 4,
         p: 2,
-        bgcolor: 'background.paper',
+        bgcolor: "background.paper",
         borderRadius: 1,
         boxShadow: 1,
       }}
@@ -46,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({
           value={n}
           onChange={(e) => setN(Number(e.target.value))}
           size="small"
-          sx={{ width: '100px' }}
+          sx={{ width: "100px" }}
           inputProps={{ min: 1, max: 10 }}
         />
       </Tooltip>
@@ -58,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({
           value={logq}
           onChange={(e) => setLogq(Number(e.target.value))}
           size="small"
-          sx={{ width: '100px' }}
+          sx={{ width: "100px" }}
           inputProps={{ min: 1, max: 32 }}
         />
       </Tooltip>
@@ -66,34 +64,27 @@ const Header: React.FC<HeaderProps> = ({
       <Button
         variant="contained"
         onClick={onGenerate}
-        sx={{ minWidth: '160px' }}
+        sx={{ minWidth: "160px" }}
       >
         Generate Model
       </Button>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <Button
           variant="outlined"
           startIcon={<KeyIcon />}
           onClick={() => setShowKey(!showKey)}
-          sx={{ minWidth: '160px' }}
+          sx={{ minWidth: "160px" }}
         >
-          {showKey ? 'Hide Secret Key' : 'Show Secret Key'}
+          {showKey ? "Hide Secret Key" : "Show Secret Key"}
         </Button>
         {showKey && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-              {secretKey.length > 0 ? `[${secretKey.join(', ')}]` : 'No key generated'}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
+              {secretKey.length > 0
+                ? `[${secretKey.join(", ")}]`
+                : "No key generated"}
             </Typography>
-            <Tooltip title={showKey ? 'Hide key' : 'Show key'}>
-              <IconButton
-                size="small"
-                onClick={() => setShowKey(!showKey)}
-                sx={{ p: 0.5 }}
-              >
-                {showKey ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
-              </IconButton>
-            </Tooltip>
           </Box>
         )}
       </Box>
