@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Request
 from typing import Any, Dict, List, Optional
 import numpy as np
 
@@ -8,11 +8,13 @@ from app.schemas.gsw import (
 )
 from app.services.gsw_service import GSWService
 
-router = APIRouter()
+# Create a single instance of the service for this API
 gsw_service = GSWService()
 
+router = APIRouter()
+
 @router.post("/init", response_model=GSWResponse, status_code=status.HTTP_201_CREATED)
-async def initialize_gsw(params: GSWInitRequest) -> Dict[str, Any]:
+async def initialize_gsw(request: GSWInitRequest, fastapi_request: Request) -> Dict[str, Any]:
     """
     Initialize the GSW cryptosystem with parameters n and q.
     
@@ -20,7 +22,7 @@ async def initialize_gsw(params: GSWInitRequest) -> Dict[str, Any]:
     - **q**: Modulus (must be > 1)
     """
     try:
-        result = gsw_service.initialize(n=params.n, q=params.q)
+        result = gsw_service.initialize(request.n, request.q, fastapi_request)
         return {
             "success": True,
             "message": result["message"],
@@ -44,7 +46,7 @@ async def initialize_gsw(params: GSWInitRequest) -> Dict[str, Any]:
         )
 
 @router.post("/encrypt", response_model=GSWResponse)
-async def encrypt_plaintext(request: GSWEncryptRequest) -> Dict[str, Any]:
+async def encrypt_plaintext(request: GSWEncryptRequest, fastapi_request: Request) -> Dict[str, Any]:
     """
     Encrypt a plaintext matrix using the GSW cryptosystem.
     
@@ -52,8 +54,10 @@ async def encrypt_plaintext(request: GSWEncryptRequest) -> Dict[str, Any]:
     - **reset**: If True, resets the GSW instance before encryption
     """
     try:
+        # Ensure parameter order matches the service method definition
         result = gsw_service.encrypt(
             plaintext=request.plaintext,
+            request=fastapi_request,
             reset=request.reset
         )
         return {
@@ -75,7 +79,7 @@ async def encrypt_plaintext(request: GSWEncryptRequest) -> Dict[str, Any]:
         )
 
 @router.post("/decrypt", response_model=GSWResponse)
-async def decrypt_ciphertext(request: GSWDecryptRequest) -> Dict[str, Any]:
+async def decrypt_ciphertext(request: GSWDecryptRequest, fastapi_request: Request) -> Dict[str, Any]:
     """
     Decrypt a ciphertext using the provided key.
     
@@ -87,6 +91,7 @@ async def decrypt_ciphertext(request: GSWDecryptRequest) -> Dict[str, Any]:
         result = gsw_service.decrypt(
             ciphertext=request.ciphertext,
             key=request.key,
+            request=fastapi_request,
             reset=request.reset
         )
         return {
@@ -108,7 +113,7 @@ async def decrypt_ciphertext(request: GSWDecryptRequest) -> Dict[str, Any]:
         )
 
 @router.post("/operate", response_model=GSWResponse)
-async def operate_ciphertext(request: GSWOperateRequest) -> Dict[str, Any]:
+async def operate_ciphertext(request: GSWOperateRequest, fastapi_request: Request) -> Dict[str, Any]:
     """
     Operate on a ciphertext.
     
@@ -122,6 +127,7 @@ async def operate_ciphertext(request: GSWOperateRequest) -> Dict[str, Any]:
             operation=request.operation,
             ciphertext=request.ciphertext,
             inputCiphertext=request.inputCiphertext,
+            request=fastapi_request,
             reset=request.reset
         )
         return {
@@ -143,7 +149,7 @@ async def operate_ciphertext(request: GSWOperateRequest) -> Dict[str, Any]:
         )
 
 @router.post("/ciphertext_error", response_model=GSWResponse)
-async def get_ciphertext_error(request: GSWCiphertextErrorRequest) -> Dict[str, Any]:
+async def get_ciphertext_error(request: GSWCiphertextErrorRequest, fastapi_request: Request) -> Dict[str, Any]:
     """
     Get the error of a ciphertext.
     
@@ -153,6 +159,7 @@ async def get_ciphertext_error(request: GSWCiphertextErrorRequest) -> Dict[str, 
     try:
         result = gsw_service.get_ciphertext_error(
             ciphertext=request.ciphertext,
+            request=fastapi_request,
             reset=request.reset
         )
         return {
@@ -176,9 +183,9 @@ async def get_ciphertext_error(request: GSWCiphertextErrorRequest) -> Dict[str, 
         )
 
 @router.get("/model_info", response_model=GSWResponse)
-async def get_model_info() -> Dict[str, Any]:
+async def get_model_info(fastapi_request: Request) -> Dict[str, Any]:
     """Get information about the current GSW model."""
-    model_info = gsw_service.get_model_info()
+    model_info = gsw_service.get_model_info(fastapi_request)
     if model_info is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

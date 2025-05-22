@@ -11,7 +11,7 @@ class GSWEncryptRequest(BaseModel):
 
 class GSWDecryptRequest(BaseModel):
     ciphertext: List[List[int]] = Field(..., description="Ciphertext to decrypt")
-    key: List[int] = Field(..., description="Secret key for decryption")
+    key: List[List[int]] = Field(..., description="Secret key for decryption")
     reset: bool = Field(False, description="Reset the GSW instance before operation")
 
 class GSWOperateRequest(BaseModel):

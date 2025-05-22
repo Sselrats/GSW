@@ -1,12 +1,18 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
 from typing import Dict, Any
 import uvicorn
 import os
+import asyncio
 
 from app.core.config import settings
 from app.api.endpoints import gsw as gsw_endpoints
+from app.services.gsw_service import GSWService
+
+# Create an instance for session cleanup
+gsw_service_instance = GSWService()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -15,6 +21,14 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json"
+)
+
+# Add session middleware
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="your-secure-secret-key",  # In production, use a secure secret from environment variables
+    session_cookie="gsw_session",
+    max_age=3600  # 1 hour
 )
 
 # Set up CORS
@@ -32,6 +46,19 @@ app.include_router(
     prefix="/api/v1/gsw",
     tags=["gsw"]
 )
+
+# Session cleanup task
+async def cleanup_sessions_periodically():
+    """Periodically clean up expired sessions."""
+    while True:
+        await asyncio.sleep(3600)  # Run every hour
+        gsw_service_instance._cleanup_sessions()
+
+@app.on_event("startup")
+async def startup_event():
+    """Startup event handler to initialize background tasks."""
+    # Start the session cleanup task
+    asyncio.create_task(cleanup_sessions_periodically())
 
 @app.get("/api/health", response_model=Dict[str, str])
 async def health_check() -> Dict[str, str]:

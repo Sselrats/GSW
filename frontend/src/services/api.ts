@@ -2,6 +2,9 @@ import axios, { type AxiosResponse } from "axios";
 
 const API_BASE_URL = "http://localhost:8000/api/v1/gsw";
 
+// Configure axios to send cookies with requests (important for session management)
+axios.defaults.withCredentials = true;
+
 // Define types for API requests and responses
 export interface GSWInitParams {
   n: number;
