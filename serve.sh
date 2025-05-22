@@ -1,6 +1,7 @@
 git pull
 
 cd frontend
+npm i
 npm run build
 pm2 restart all
 
