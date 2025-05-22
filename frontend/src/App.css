@@ -1,0 +1,87 @@
+/* Global Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  color: #212121;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Utility Classes */
+.flex-grow {
+  flex-grow: 1;
+}
+
+/* Responsive Layout Adjustments */
+@media (max-width: 900px) {
+  .MuiContainer-root {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* Animation for loading states */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Custom styles for matrix display */
+.matrix-container {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.matrix {
+  border-collapse: collapse;
+  margin: 0 auto;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.matrix td {
+  padding: 4px 8px;
+  text-align: right;
+  min-width: 30px;
+  border: 1px solid #e0e0e0;
+}
+
+.matrix tr:first-child td {
+  border-top: 2px solid #1976d2;
+}
+
+.matrix tr:last-child td {
+  border-bottom: 2px solid #1976d2;
+}
+
+.matrix td:first-child {
+  border-left: 2px solid #1976d2;
+}
+
+.matrix td:last-child {
+  border-right: 2px solid #1976d2;
+}
