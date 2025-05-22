@@ -1,9 +1,10 @@
 import numpy as np
 
-def uniform_sample(space):
-    return np.random.choice(space)
+def uniform_sample(space, n = 1):
+    return np.random.choice(space, n)
 
-def check_modq(A, B, q):
+
+def is_two_array_same_in_modq(A, B, q):
     return np.array_equal(A % q, B % q)
 
 def decompose(n, logq):

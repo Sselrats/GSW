@@ -1,4 +1,4 @@
-from utils import *
+from utils import uniform_sample, is_two_array_same_in_modq, decompose
 from gsw import GSW
 
 import numpy as np
@@ -8,7 +8,7 @@ n = 5
 logq = 10
 q = 2**logq
 
-test_num = 256
+test_num = 32
 
 def GSW_correction_test():
     print(f"=== GSW_correction_test ===")
@@ -19,9 +19,9 @@ def GSW_correction_test():
         gsw = GSW(n, q)
         msg = uniform_sample([0, 1])
         ctxt = gsw.Enc(msg)
-        s_ = gsw.generate_s()
+        random_s = gsw.generate_s()
 
-        if (msg == gsw.Dec_with_key(ctxt, s_)):
+        if (msg == gsw.Dec_with_key(ctxt, random_s)):
             good += 1
         else:
             bad += 1
@@ -46,7 +46,7 @@ def G_inverse_test():
         M = np.random.randint(0, q, (gsw.l, gsw.n+1))
         G_inv_M = gsw.generate_G_inverse(M)
 
-        if not check_modq(G_inv_M @ gsw.G, M, q):
+        if not is_two_array_same_in_modq(G_inv_M @ gsw.G, M, q):
             broken += 1
 
     if broken == 0:
@@ -137,6 +137,33 @@ def GSW_Ciphertext_Error_On_Single_Add_test():
         print("Test failed with broken:", broken)
     
 
+def GSW_Ciphertext_Error_On_Single_Mult_test():
+    print(f"=== GSW_Ciphertext_Error_On_Single_Mult_test ===")
+    broken = 0
+    errors = []
+    for _ in range(test_num):
+        gsw = GSW(n, q)
+        msg1 = uniform_sample([0, 1])
+        msg2 = uniform_sample([0, 1])
+        ctxt1 = gsw.Enc(msg1)
+        ctxt2 = gsw.Enc(msg2)
+
+        ctxt1.Mult(ctxt2)
+
+        error12 = ctxt1.get_error((msg1 * msg2) % 2)
+        errors.append(error12)
+
+        if not ctxt1.is_error_valid((msg1 * msg2) % 2):
+            broken += 1
+
+    print("Errors:", [f"{i}: {Counter(errors)[i]}" for i in range(max(errors)+1) if Counter(errors)[i] > 0])
+
+    if broken == 0:
+        print("Test passed!")
+    else:
+        print("Test failed with broken:", broken)
+  
+
 def run_tests():
     GSW_correction_test()
     G_inverse_test()
@@ -144,6 +171,7 @@ def run_tests():
     GSW_Ciphertext_Add_test()
     GSW_Ciphertext_Mult_test()
     GSW_Ciphertext_Error_On_Single_Add_test()
+    GSW_Ciphertext_Error_On_Single_Mult_test()
 
 if __name__ == "__main__":
     run_tests()

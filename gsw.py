@@ -19,9 +19,11 @@ class GSW:
 
     def generate_s(self):
         s = np.ones((self.n+1, 1), dtype=np.int32)
+        # s[uniform_sample(range(1, self.n+1), self.n // 2 + 1)] = 0
+
         for i in range(1, self.n+1):
             s[i] = uniform_sample([0, 1])
-
+        
         return s
 
     def encode(self, msg):
@@ -83,9 +85,12 @@ class GSW_Ciphertext:
         error_vec = ((self.C @ s) - self.gsw.encode(ptxt) * (G @ s)) % self.gsw.q
 
         return abs(error_vec[0][0])
+
+    def max_valid_error(self):
+        return self.gsw.q // 2
     
     def is_error_valid(self, ptxt):
-        return self.get_error(ptxt) < self.gsw.q // 2
+        return self.get_error(ptxt) < self.max_valid_error()
 
     def Dec_with_key(self, s):
         encoded = (self.C[0] @ s)[0] % self.gsw.q
