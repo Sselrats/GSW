@@ -2,7 +2,11 @@ import axios, { type AxiosResponse } from "axios";
 
 // Load API URL from environment variables (defined in .env file)
 // In React, environment variables are accessed via process.env and need to be prefixed with REACT_APP_
-const API_BASE_URL = (import.meta.env?.REACT_APP_API_BASE_URL as string) || "http://localhost:8000/api/v1/gsw";
+const API_BASE_URL =
+  (import.meta.env?.VITE_API_BASE_URL as string) ||
+  "http://localhost:8000/api/v1/gsw";
+
+console.log(import.meta.env?.VITE_API_BASE_URL);
 
 // Configure axios to send cookies with requests (important for session management)
 axios.defaults.withCredentials = true;
