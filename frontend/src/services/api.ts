@@ -6,8 +6,6 @@ const API_BASE_URL =
   (import.meta.env?.VITE_API_BASE_URL as string) ||
   "http://localhost:8000/api/v1/gsw";
 
-console.log(import.meta.env?.VITE_API_BASE_URL);
-
 // Configure axios to send cookies with requests (important for session management)
 axios.defaults.withCredentials = true;
 
