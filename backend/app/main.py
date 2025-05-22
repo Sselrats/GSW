@@ -26,7 +26,7 @@ app = FastAPI(
 # Add session middleware
 app.add_middleware(
     SessionMiddleware,
-    secret_key="your-secure-secret-key",  # In production, use a secure secret from environment variables
+    secret_key=settings.SECRET_KEY,
     session_cookie="gsw_session",
     max_age=3600  # 1 hour
 )
