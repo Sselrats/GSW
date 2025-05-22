@@ -4,11 +4,11 @@ from gsw import GSW
 import numpy as np
 from collections import Counter
 
-n = 5
-logq = 10
+n = 32
+logq = 8
 q = 2**logq
 
-test_num = 32
+test_num = 128
 
 def GSW_correction_test():
     print(f"=== GSW_correction_test ===")

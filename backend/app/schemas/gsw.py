@@ -2,8 +2,8 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 
 class GSWInitRequest(BaseModel):
-    n: int = Field(..., gt=0, le=10, description="Dimension of the lattice")
-    q: int = Field(..., gt=1, le=2**32, description="Modulus")
+    n: int = Field(..., gt=1, le=512, description="Dimension of the lattice")
+    q: int = Field(..., gt=1, le=2**15, description="Modulus")
 
 class GSWEncryptRequest(BaseModel):
     plaintext: int = Field(..., description="Plaintext matrix to encrypt")
