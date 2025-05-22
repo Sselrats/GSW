@@ -57,8 +57,20 @@ function App() {
     severity: "success" | "error" | "info" | "warning";
   }>({ show: false, message: "", severity: "info" });
 
+  const clear = () => {
+    setPlaintext(0);
+    setCiphertext([]);
+    setInputPlaintext("");
+    setInputCiphertext([]);
+    setSecretKey([]);
+    setDecryptResult("");
+    setIsModelInitialized(false);
+    setLoading(false);
+  };
+
   const handleGenerateModel = async () => {
     try {
+      clear();
       setLoading(true);
       const q = Math.pow(2, logq);
       const response = await apiService.initializeGSW({ n, q });
@@ -171,11 +183,12 @@ function App() {
 
       if (response.success && response.data) {
         if (operation == "Add") {
-          setPlaintext(plaintext + parseInt(inputPlaintext));
+          setPlaintext((plaintext + parseInt(inputPlaintext)) % 2);
         } else {
-          setPlaintext(plaintext * parseInt(inputPlaintext));
+          setPlaintext((plaintext * parseInt(inputPlaintext)) % 2);
         }
         setCiphertext(response.data.ciphertext);
+        setInputCiphertext([]);
         setAlert({
           show: true,
           message: "Operation successful!",
